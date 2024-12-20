@@ -17,6 +17,10 @@ public class Song {
     @JoinColumn(name = "band_id")
     private Band band;
 
+    @ManyToOne
+    @JoinColumn(name = "repertory_id")
+    private Repertory repertorio;
+
     public UUID getId() {
         return id;
     }
@@ -55,5 +59,13 @@ public class Song {
 
     public void setBand(Band band) {
         this.band = band;
+    }
+
+    public Repertory getRepertorio() {
+        return repertorio;
+    }
+
+    public void setRepertorio(Repertory repertorio) {
+        this.repertorio = repertorio;
     }
 }

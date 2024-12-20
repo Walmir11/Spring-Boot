@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,14 +18,16 @@ public class Band {
 
     @ManyToMany
     @JoinTable(
-            name = "band_members",
-            joinColumns = @JoinColumn(name = "band_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+        name = "band_members",
+        joinColumns = @JoinColumn(name = "band_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> members;
+    private Set<User> members = new HashSet<>();
 
     @OneToMany(mappedBy = "band")
-    private Set<Song> songs;
+    private Set<Song> songs = new HashSet<>();
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -64,5 +67,13 @@ public class Band {
 
     public void setSongs(Set<Song> songs) {
         this.songs = songs;
+    }
+
+    public void addMember(User member) {
+        this.members.add(member);
+    }
+
+    public void removeMember(User member) {
+        this.members.remove(member);
     }
 }
