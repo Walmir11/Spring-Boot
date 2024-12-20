@@ -5,6 +5,8 @@ import com.example.demo.repositories.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SongService {
     @Autowired
@@ -12,5 +14,9 @@ public class SongService {
 
     public Song save(Song song) {
         return songRepository.save(song);
+    }
+
+    public List<Song> findAll() {
+        return songRepository.findAll();
     }
 }

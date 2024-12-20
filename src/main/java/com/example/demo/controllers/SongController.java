@@ -5,6 +5,8 @@ import com.example.demo.services.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/songs")
 public class SongController {
@@ -14,5 +16,10 @@ public class SongController {
     @PostMapping
     public Song createSong(@RequestBody Song song) {
         return songService.save(song);
+    }
+
+    @GetMapping
+    public List<Song> getAllSongs() {
+        return songService.findAll();
     }
 }
