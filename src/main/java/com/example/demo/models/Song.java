@@ -1,31 +1,31 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
-import java.util.UUID;
 
 @Entity
-@Table(name = "songs")
 public class Song {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
     private String pdfPath;
     private boolean active;
 
     @ManyToOne
-    @JoinColumn(name = "band_id")
+    @JoinColumn(name = "banda_id")
     private Band band;
 
     @ManyToOne
-    @JoinColumn(name = "repertory_id")
+    @JoinColumn(name = "repertorio_id")
     private Repertory repertorio;
 
-    public UUID getId() {
+    // Getters and setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -37,20 +37,20 @@ public class Song {
         this.title = title;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
     public String getPdfPath() {
         return pdfPath;
     }
 
     public void setPdfPath(String pdfPath) {
         this.pdfPath = pdfPath;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Band getBand() {

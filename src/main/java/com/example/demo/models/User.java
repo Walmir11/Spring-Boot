@@ -35,6 +35,14 @@ public class User {
         this.username = username;
     }
 
+    public Set<Band> getBands() {
+        return bands;
+    }
+
+    public void setBands(Set<Band> bands) {
+        this.bands = bands;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -49,13 +57,5 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public Set<Band> getBands() {
-        return bands;
-    }
-
-    public void setBands(Set<Band> bands) {
-        this.bands = bands;
     }
 }

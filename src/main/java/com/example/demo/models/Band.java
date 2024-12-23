@@ -1,11 +1,11 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 @Entity
-@Table(name = "bands")
+@Table(name = "banda")
 public class Band {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,24 +18,14 @@ public class Band {
 
     @ManyToMany
     @JoinTable(
-        name = "band_members",
-        joinColumns = @JoinColumn(name = "band_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+            name = "membros",
+            joinColumns = @JoinColumn(name = "banda_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "band")
-    private Set<Song> songs = new HashSet<>();
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "banda")
+    private Set<Repertory> repertorios;
 
     public String getName() {
         return name;
@@ -43,6 +33,14 @@ public class Band {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public User getLeader() {
@@ -61,19 +59,15 @@ public class Band {
         this.members = members;
     }
 
-    public Set<Song> getSongs() {
-        return songs;
+    public Set<Repertory> getRepertorios() {
+        return repertorios;
     }
 
-    public void setSongs(Set<Song> songs) {
-        this.songs = songs;
+    public void setRepertorios(Set<Repertory> repertorios) {
+        this.repertorios = repertorios;
     }
 
-    public void addMember(User member) {
-        this.members.add(member);
-    }
-
-    public void removeMember(User member) {
-        this.members.remove(member);
+    public void addMember(User user) {
+        this.members.add(user);
     }
 }

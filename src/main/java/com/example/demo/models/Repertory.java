@@ -1,7 +1,6 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
-
 import java.util.Set;
 
 @Entity
@@ -9,6 +8,7 @@ public class Repertory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nome;
 
     @ManyToOne
@@ -18,6 +18,7 @@ public class Repertory {
     @OneToMany(mappedBy = "repertorio")
     private Set<Song> musicas;
 
+    // Getters and setters
     public Long getId() {
         return id;
     }
