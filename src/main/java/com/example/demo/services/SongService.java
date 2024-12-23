@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.models.Band;
 import com.example.demo.models.Song;
 import com.example.demo.repositories.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,10 @@ public class SongService {
 
     public List<Song> findByTitleContaining(String title) {
         return songRepository.findByTitleContaining(title);
+    }
+
+    public Optional<Song> findByTitleAndBand(String title, Band band) {
+        return songRepository.findByTitleAndBand(title, band);
     }
 
     public Song updateSong(UUID id, Song updatedSong) {

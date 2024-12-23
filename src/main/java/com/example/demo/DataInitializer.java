@@ -76,27 +76,8 @@ public class DataInitializer implements CommandLineRunner {
         repertory1.setBanda(queen);
         repertoryService.save(repertory1);
 
-        Song song1 = new Song();
-        song1.setTitle("Bohemian Rhapsody");
-        song1.setPdfPath("path/to/bohemian_rhapsody.pdf");
-        song1.setActive(true);
-        song1.setBand(queen);
-        song1.setRepertorio(repertory1);
-        songService.save(song1);
-
-        Song song2 = new Song();
-        song2.setTitle("We Will Rock You");
-        song2.setPdfPath("path/to/we_will_rock_you.pdf");
-        song2.setActive(true);
-        song2.setBand(queen);
-        song2.setRepertorio(repertory1);
-        songService.save(song2);
-
-        Set<Song> musicas1 = new HashSet<>();
-        musicas1.add(song1);
-        musicas1.add(song2);
-        repertory1.setMusicas(musicas1);
-        repertoryService.save(repertory1);
+        addSongToRepertory("Bohemian Rhapsody", "path/to/bohemian_rhapsody.pdf", queen, repertory1);
+        addSongToRepertory("We Will Rock You", "path/to/we_will_rock_you.pdf", queen, repertory1);
 
         // Criando repertório e adicionando músicas para a segunda banda
         Repertory repertory2 = new Repertory();
@@ -104,29 +85,35 @@ public class DataInitializer implements CommandLineRunner {
         repertory2.setBanda(rollingStones);
         repertoryService.save(repertory2);
 
-        Song song3 = new Song();
-        song3.setTitle("Paint It Black");
-        song3.setPdfPath("path/to/paint_it_black.pdf");
-        song3.setActive(true);
-        song3.setBand(rollingStones);
-        song3.setRepertorio(repertory2);
-        songService.save(song3);
-
-        Song song4 = new Song();
-        song4.setTitle("Angie");
-        song4.setPdfPath("path/to/angie.pdf");
-        song4.setActive(true);
-        song4.setBand(rollingStones);
-        song4.setRepertorio(repertory2);
-        songService.save(song4);
-
-        Set<Song> musicas2 = new HashSet<>();
-        musicas2.add(song3);
-        musicas2.add(song4);
-        repertory2.setMusicas(musicas2);
-        repertoryService.save(repertory2);
+        addSongToRepertory("Paint It Black", "path/to/paint_it_black.pdf", rollingStones, repertory2);
+        addSongToRepertory("Angie", "path/to/angie.pdf", rollingStones, repertory2);
 
         System.out.println("Dados iniciais adicionados e operações simuladas.");
+    }
+
+    private void addSongToRepertory(String title, String pdfPath, Band band, Repertory repertory) {
+        Optional<Song> existingSong = songService.findByTitleAndBand(title, band);
+        Song song;
+        if (existingSong.isPresent()) {
+            song = existingSong.get();
+        } else {
+            song = new Song();
+            song.setTitle(title);
+            song.setPdfPath(pdfPath);
+            song.setActive(true);
+            song.setBand(band);
+            songService.save(song);
+        }
+        song.setRepertorio(repertory);
+        songService.save(song);
+
+        Set<Song> musicas = repertory.getMusicas();
+        if (musicas == null) {
+            musicas = new HashSet<>();
+        }
+        musicas.add(song);
+        repertory.setMusicas(musicas);
+        repertoryService.save(repertory);
     }
 
     private void createUserIfNotExists(String username, String password, String role) {
