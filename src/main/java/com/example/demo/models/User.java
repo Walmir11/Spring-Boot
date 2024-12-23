@@ -19,6 +19,18 @@ public class User {
     @ManyToMany(mappedBy = "members")
     private Set<Band> bands;
 
+    @ManyToOne
+    @JoinColumn(name = "band_id")
+    private Band band;
+
+    public Band getBand() {
+        return band;
+    }
+
+    public void setBand(Band band) {
+        this.band = band;
+    }
+
     public Long getId() {
         return id;
     }

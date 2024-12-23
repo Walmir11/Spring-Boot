@@ -4,6 +4,7 @@ import com.example.demo.models.*;
 import com.example.demo.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -15,6 +16,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private BandService bandService;
@@ -44,6 +48,7 @@ public class DataInitializer implements CommandLineRunner {
         Optional<User> freddieMercury = userService.findByUsername("freddie_mercury");
         freddieMercury.ifPresent(queen::setLeader);
         bandService.save(queen);
+        queen.addMember(freddieMercury.get());
 
         // Adicionando membros à banda Queen
         Optional<User> brianMay = userService.findByUsername("brian_may");
@@ -121,7 +126,7 @@ public class DataInitializer implements CommandLineRunner {
         if (!existingUser.isPresent()) {
             User user = new User();
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password)); // Ensure password is encoded
             user.setRole(role);
             userService.save(user);
         }
