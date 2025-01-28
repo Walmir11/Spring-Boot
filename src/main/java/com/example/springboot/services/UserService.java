@@ -28,8 +28,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public UserModel getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserModel getUserByLogin(String login) {
+        return userRepository.findByLogin(login);
     }
 
     public List<UserModel> getAllUsers() {

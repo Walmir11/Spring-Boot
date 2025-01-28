@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user-profiles")
@@ -48,9 +47,7 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
         UserModel userModel = userO.get();
-        Set<ProfileModel> profiles = userModel.getProfiles().stream()
-                .filter(profile -> "A".equals(profile.getPuTxStatus()) && "A".equals(profile.getPerTxStatus()))
-                .collect(Collectors.toSet());
+        Set<ProfileModel> profiles = userModel.getProfiles();
         return ResponseEntity.status(HttpStatus.OK).body(profiles);
     }
 }

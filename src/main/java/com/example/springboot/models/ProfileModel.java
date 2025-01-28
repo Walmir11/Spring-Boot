@@ -2,26 +2,31 @@ package com.example.springboot.models;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.Set;
 
 @Entity
-@Table(name = "TB_PROFILES", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+@Table(name = "per_perfil")
 public class ProfileModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID idProfile;
-    private String name;
-    private String puTxStatus;
-    private String perTxStatus;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "per_nr_id")
+    private Integer id;
 
-    public UUID getIdProfile() {
-        return idProfile;
+    @Column(name = "per_tx_nome", nullable = false, length = 100)
+    private String name;
+
+    @ManyToMany(mappedBy = "profiles")
+    private Set<UserModel> users;
+
+    // Getter and Setter methods
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdProfile(UUID idProfile) {
-        this.idProfile = idProfile;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -32,19 +37,11 @@ public class ProfileModel implements Serializable {
         this.name = name;
     }
 
-    public String getPuTxStatus() {
-        return puTxStatus;
+    public Set<UserModel> getUsers() {
+        return users;
     }
 
-    public void setPuTxStatus(String puTxStatus) {
-        this.puTxStatus = puTxStatus;
-    }
-
-    public String getPerTxStatus() {
-        return perTxStatus;
-    }
-
-    public void setPerTxStatus(String perTxStatus) {
-        this.perTxStatus = perTxStatus;
+    public void setUsers(Set<UserModel> users) {
+        this.users = users;
     }
 }

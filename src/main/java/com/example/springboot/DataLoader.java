@@ -26,9 +26,9 @@ public class DataLoader implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         // Cria perfis
-        createProfileIfNotExists("Admin", "A");
-        createProfileIfNotExists("User", "A");
-        createProfileIfNotExists("Guest", "A");
+        createProfileIfNotExists("Admin");
+        createProfileIfNotExists("User");
+        createProfileIfNotExists("Guest");
 
         // Cria e associa usuários
         createUserIfNotExists("john.doe", "password123", "Admin", "User");
@@ -37,29 +37,27 @@ public class DataLoader implements CommandLineRunner {
 
         // Exibe todos os usuários e seus perfis
         userService.getAllUsers().forEach(user -> {
-            System.out.println("Usuário: " + user.getUsername());
+            System.out.println("Usuário: " + user.getLogin());
             System.out.print("Perfis: ");
             user.getProfiles().forEach(profile -> System.out.print(profile.getName() + " "));
             System.out.println();
         });
     }
 
-    private void createProfileIfNotExists(String name, String status) {
+    private void createProfileIfNotExists(String name) {
         Optional<ProfileModel> existingProfile = profileService.getAllProfiles().stream()
                 .filter(profile -> profile.getName().equals(name))
                 .findFirst();
         if (existingProfile.isEmpty()) {
             ProfileModel profile = new ProfileModel();
             profile.setName(name);
-            profile.setPuTxStatus(status);
-            profile.setPerTxStatus(status);
             profileService.saveProfile(profile);
         } else {
             System.out.println("Perfil '" + name + "' já existe.");
         }
     }
 
-    private void createUserIfNotExists(String username, String password, String... profileNames) {
+    private void createUserIfNotExists(String login, String password, String... profileNames) {
         boolean passwordInUse = userService.getAllUsers().stream()
                 .anyMatch(user -> user.getPassword().equals(password));
         if (passwordInUse) {
@@ -68,8 +66,9 @@ public class DataLoader implements CommandLineRunner {
         }
 
         UserModel user = new UserModel();
-        user.setUsername(username);
+        user.setLogin(login);
         user.setPassword(password);
+        user.setName(login); // Assuming the name is the same as the login for simplicity
 
         Set<ProfileModel> profileSet = new HashSet<>();
         for (String profileName : profileNames) {

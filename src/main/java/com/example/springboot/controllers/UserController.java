@@ -24,11 +24,15 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Object> saveUser(@RequestBody @Valid UserDto userDto) {
         var userModel = new UserModel();
-        BeanUtils.copyProperties(userDto, userModel);
+        userModel.setLogin(userDto.username());
+        userModel.setPassword(userDto.password());
+        userModel.setName(userDto.username()); // Ensure the name is set to username
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userModel));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -43,7 +47,7 @@ public class UserController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticateUser(@RequestBody @Valid UserDto userDto) {
-        UserModel userModel = userService.getUserByUsername(userDto.username());
+        UserModel userModel = userService.getUserByLogin(userDto.username());
         if (userModel == null || !userModel.getPassword().equals(userDto.password())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials.");
         }
