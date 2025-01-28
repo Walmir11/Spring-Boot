@@ -51,7 +51,8 @@ public class DataLoader implements CommandLineRunner {
         if (existingProfile.isEmpty()) {
             ProfileModel profile = new ProfileModel();
             profile.setName(name);
-            profile.setStatus(status);
+            profile.setPuTxStatus(status);
+            profile.setPerTxStatus(status);
             profileService.saveProfile(profile);
         } else {
             System.out.println("Perfil '" + name + "' já existe.");

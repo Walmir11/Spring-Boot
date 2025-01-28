@@ -13,7 +13,8 @@ public class ProfileModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idProfile;
     private String name;
-    private String status;
+    private String puTxStatus;
+    private String perTxStatus;
 
     public UUID getIdProfile() {
         return idProfile;
@@ -31,11 +32,19 @@ public class ProfileModel implements Serializable {
         this.name = name;
     }
 
-    public String getStatus() {
-        return status;
+    public String getPuTxStatus() {
+        return puTxStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setPuTxStatus(String puTxStatus) {
+        this.puTxStatus = puTxStatus;
+    }
+
+    public String getPerTxStatus() {
+        return perTxStatus;
+    }
+
+    public void setPerTxStatus(String perTxStatus) {
+        this.perTxStatus = perTxStatus;
     }
 }

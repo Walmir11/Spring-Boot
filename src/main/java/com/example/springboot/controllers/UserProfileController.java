@@ -49,7 +49,7 @@ public class UserProfileController {
         }
         UserModel userModel = userO.get();
         Set<ProfileModel> profiles = userModel.getProfiles().stream()
-                .filter(profile -> "A".equals(profile.getStatus()))
+                .filter(profile -> "A".equals(profile.getPuTxStatus()) && "A".equals(profile.getPerTxStatus()))
                 .collect(Collectors.toSet());
         return ResponseEntity.status(HttpStatus.OK).body(profiles);
     }
