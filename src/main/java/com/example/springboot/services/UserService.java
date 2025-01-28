@@ -16,11 +16,6 @@ public class UserService {
     private UserRepository userRepository;
 
     public UserModel saveUser(UserModel userModel) {
-        boolean passwordInUse = userRepository.findAll().stream()
-                .anyMatch(user -> user.getPassword().equals(userModel.getPassword()));
-        if (passwordInUse) {
-            throw new IllegalArgumentException("A senha já está em uso por outro usuário.");
-        }
         return userRepository.save(userModel);
     }
 
@@ -28,11 +23,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public UserModel getUserByLogin(String login) {
-        return userRepository.findByLogin(login);
-    }
-
     public List<UserModel> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public UserModel getUserByLogin(String login) {
+        return userRepository.findByLogin(login);
     }
 }

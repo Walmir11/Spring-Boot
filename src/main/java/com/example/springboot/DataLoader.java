@@ -68,7 +68,7 @@ public class DataLoader implements CommandLineRunner {
         UserModel user = new UserModel();
         user.setLogin(login);
         user.setPassword(password);
-        user.setName(login); // Assuming the name is the same as the login for simplicity
+        user.setName(login);
 
         Set<ProfileModel> profileSet = new HashSet<>();
         for (String profileName : profileNames) {
