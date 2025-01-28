@@ -1,105 +1,84 @@
 package com.example.springboot;
 
-import com.example.springboot.models.ProductModel;
-import com.example.springboot.repositories.ProductRepository;
+import com.example.springboot.models.ProfileModel;
+import com.example.springboot.models.UserModel;
+import com.example.springboot.services.ProfileService;
+import com.example.springboot.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Set;
 
 @Component
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
-    private ProductRepository productRepository;
+    private UserService userService;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ProfileService profileService;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
-        // Create a new product
-        ProductModel product = new ProductModel();
-        product.setIdProduct(UUID.randomUUID());
-        product.setName("Sample Product");
-        product.setValue(new BigDecimal("19.99"));
+        // Cria perfis
+        createProfileIfNotExists("Admin", "A");
+        createProfileIfNotExists("User", "A");
+        createProfileIfNotExists("Guest", "A");
 
-        ProductModel product1 = new ProductModel();
-        product1.setIdProduct(UUID.randomUUID());
-        product1.setName("Product 1");
-        product1.setValue(new BigDecimal("9.99"));
+        // Cria e associa usuários
+        createUserIfNotExists("john.doe", "password123", "Admin", "User");
+        createUserIfNotExists("jane.smith", "password456", "User");
+        createUserIfNotExists("guest.user", "password789", "Guest");
 
-        ProductModel product2 = new ProductModel();
-        product2.setIdProduct(UUID.randomUUID());
-        product2.setName("Product 2");
-        product2.setValue(new BigDecimal("19.99"));
-
-        // Save the product to the database
-        productRepository.save(product);
-        productRepository.save(product1);
-        productRepository.save(product2);
-
-        // Update the product
-        updateProduct(product.getIdProduct(), "Updated Product", new BigDecimal("29.99"));
-
-        // Get all products
-        getAllProducts();
-
-        // Print data from a specific table
-        printDataFromSpecificTable("TB_PRODUCTS");
-
-        // Delete the product
-        deleteProduct(product1.getIdProduct());
+        // Exibe todos os usuários e seus perfis
+        userService.getAllUsers().forEach(user -> {
+            System.out.println("Usuário: " + user.getUsername());
+            System.out.print("Perfis: ");
+            user.getProfiles().forEach(profile -> System.out.print(profile.getName() + " "));
+            System.out.println();
+        });
     }
 
-    private void updateProduct(UUID id, String name, BigDecimal value) {
-        Optional<ProductModel> productO = productRepository.findById(id);
-        if (productO.isPresent()) {
-            ProductModel product = productO.get();
-            product.setName(name);
-            product.setValue(value);
-            productRepository.save(product);
-            System.out.println("Product updated: " + product);
+    private void createProfileIfNotExists(String name, String status) {
+        Optional<ProfileModel> existingProfile = profileService.getAllProfiles().stream()
+                .filter(profile -> profile.getName().equals(name))
+                .findFirst();
+        if (existingProfile.isEmpty()) {
+            ProfileModel profile = new ProfileModel();
+            profile.setName(name);
+            profile.setStatus(status);
+            profileService.saveProfile(profile);
         } else {
-            System.out.println("Product not found for update.");
+            System.out.println("Perfil '" + name + "' já existe.");
         }
     }
 
-    private void getAllProducts() {
-        List<ProductModel> products = productRepository.findAll();
-        System.out.println("All products:");
-        for (ProductModel product : products) {
-            System.out.println(product);
+    private void createUserIfNotExists(String username, String password, String... profileNames) {
+        boolean passwordInUse = userService.getAllUsers().stream()
+                .anyMatch(user -> user.getPassword().equals(password));
+        if (passwordInUse) {
+            System.out.println("A senha já está em uso por outro usuário.");
+            return;
         }
-    }
 
-    private void printDataFromSpecificTable(String tableName) {
-        String query = "SELECT * FROM " + tableName;
-        List<ProductModel> products = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(ProductModel.class));
+        UserModel user = new UserModel();
+        user.setUsername(username);
+        user.setPassword(password);
 
-        if (!products.isEmpty()) {
-            System.out.println("Data from table " + tableName + ":");
-            for (ProductModel product : products) {
-                System.out.println(product);
-            }
-        } else {
-            System.out.println("No data found in the table " + tableName + ".");
+        Set<ProfileModel> profileSet = new HashSet<>();
+        for (String profileName : profileNames) {
+            Optional<ProfileModel> existingProfile = profileService.getAllProfiles().stream()
+                    .filter(profile -> profile.getName().equals(profileName))
+                    .findFirst();
+            existingProfile.ifPresent(profileSet::add);
         }
-    }
+        user.setProfiles(profileSet);
 
-    private void deleteProduct(UUID id) {
-        Optional<ProductModel> productO = productRepository.findById(id);
-        if (productO.isPresent()) {
-            productRepository.delete(productO.get());
-            System.out.println("Product deleted: " + productO.get());
-        } else {
-            System.out.println("Product not found for deletion.");
-        }
+        userService.saveUser(user);
     }
 }
