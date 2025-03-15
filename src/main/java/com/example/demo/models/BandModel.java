@@ -2,11 +2,12 @@ package com.example.demo.models;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "leaders")
+@Table(name = "TB_BANDS")
 public class BandModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -14,14 +15,14 @@ public class BandModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idBand;
     private String name;
-    private String leaderName;
 
-    @ManyToOne
-    @JoinColumn(name = "leader_id")
-    private UserModel leader;
-
-    @OneToMany(mappedBy = "band")
-    private Set<RepertoireModel> repertoires;
+    @ManyToMany
+    @JoinTable(
+            name = "band_user",
+            joinColumns = @JoinColumn(name = "band_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<UserModel> members = new HashSet<>();
 
     // Getters and Setters
 
@@ -41,30 +42,11 @@ public class BandModel implements Serializable {
         this.name = name;
     }
 
-    public String getLeaderName() {
-        return leaderName;
+    public Set<UserModel> getMembers() {
+        return members;
     }
 
-    public void setLeaderName(String leaderName) {
-        this.leaderName = leaderName;
-    }
-
-    public UserModel getLeader() {
-        return leader;
-    }
-
-    public void setLeader(UserModel leader) {
-        this.leader = leader;
-        if (leader != null) {
-            this.leaderName = leader.getUsername();
-        }
-    }
-
-    public Set<RepertoireModel> getRepertoires() {
-        return repertoires;
-    }
-
-    public void setRepertoires(Set<RepertoireModel> repertoires) {
-        this.repertoires = repertoires;
+    public void setMembers(Set<UserModel> members) {
+        this.members = members;
     }
 }

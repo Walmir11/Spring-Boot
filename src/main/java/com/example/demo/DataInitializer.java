@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,34 +29,45 @@ public class DataInitializer implements CommandLineRunner {
     private JdbcTemplate jdbcTemplate;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         // Add columns to the tables if they do not exist
         addColumnsToTables();
 
         // Adding users
-        createUserIfNotExists("freddie_mercury", "password1", true, "Queen");
-        createUserIfNotExists("brian_may", "password2", false, "Queen");
-        createUserIfNotExists("roger_taylor", "password3", false, "Queen");
-        createUserIfNotExists("john_deacon", "password4", false, "Queen");
+        createUserIfNotExists("freddie_mercury", "password1", true);
+        createUserIfNotExists("brian_may", "password2", false);
+        createUserIfNotExists("roger_taylor", "password3", false);
+        createUserIfNotExists("john_deacon", "password4", false);
 
-        createUserIfNotExists("mick_jagger", "password5", true, "The Rolling Stones");
-        createUserIfNotExists("keith_richards", "password6", false, "The Rolling Stones");
-        createUserIfNotExists("charlie_watts", "password7", false, "The Rolling Stones");
-        createUserIfNotExists("ronnie_wood", "password8", false, "The Rolling Stones");
+        createUserIfNotExists("mick_jagger", "password5", true);
+        createUserIfNotExists("keith_richards", "password6", false);
+        createUserIfNotExists("charlie_watts", "password7", false);
+        createUserIfNotExists("ronnie_wood", "password8", false);
 
         // Adding first band (Queen)
         BandModel queen = new BandModel();
         queen.setName("Queen");
-        Optional<UserModel> freddieMercury = userService.getOneUserByUsername("freddie_mercury");
-        freddieMercury.ifPresent(queen::setLeader);
         bandService.saveBand(queen);
 
         // Adding second band (The Rolling Stones)
         BandModel rollingStones = new BandModel();
         rollingStones.setName("The Rolling Stones");
-        Optional<UserModel> mickJagger = userService.getOneUserByUsername("mick_jagger");
-        mickJagger.ifPresent(rollingStones::setLeader);
         bandService.saveBand(rollingStones);
+
+        // Adding users to bands
+        addUserToBand("freddie_mercury", queen);
+        addUserToBand("brian_may", queen);
+        addUserToBand("roger_taylor", queen);
+        addUserToBand("john_deacon", queen);
+
+        addUserToBand("mick_jagger", rollingStones);
+        addUserToBand("keith_richards", rollingStones);
+        addUserToBand("charlie_watts", rollingStones);
+        addUserToBand("ronnie_wood", rollingStones);
+
+        // Example: Adding "freddie_mercury" to both "Queen" and "The Rolling Stones"
+        addUserToBand("freddie_mercury", rollingStones);
 
         // Creating repertoire and adding songs for the first band
         RepertoireModel repertoire1 = new RepertoireModel();
@@ -115,15 +127,25 @@ public class DataInitializer implements CommandLineRunner {
         return count != null && count > 0;
     }
 
-    private void createUserIfNotExists(String username, String password, boolean isLeader, String bandName) {
+    private void createUserIfNotExists(String username, String password, boolean isLeader) {
         Optional<UserModel> existingUser = userService.getOneUserByUsername(username);
         if (!existingUser.isPresent()) {
             UserModel user = new UserModel();
             user.setUsername(username);
             user.setPassword(password); // Set password as plain text
             user.setLeader(isLeader);
-            user.setBandName(bandName);
             userService.saveUser(user);
+        }
+    }
+
+    private void addUserToBand(String username, BandModel band) {
+        Optional<UserModel> userO = userService.getOneUserByUsername(username);
+        if (userO.isPresent()) {
+            UserModel user = userO.get();
+            user.getBands().add(band);
+            band.getMembers().add(user);
+            userService.saveUser(user);
+            bandService.saveBand(band);
         }
     }
 

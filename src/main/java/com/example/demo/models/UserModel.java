@@ -2,10 +2,12 @@ package com.example.demo.models;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TB_BANDS")
+@Table(name = "TB_USERS")
 public class UserModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -15,7 +17,9 @@ public class UserModel implements Serializable {
     private String username;
     private String password;
     private boolean isLeader;
-    private String bandName;
+
+    @ManyToMany(mappedBy = "members")
+    private Set<BandModel> bands = new HashSet<>();
 
     // Getters and Setters
 
@@ -51,11 +55,11 @@ public class UserModel implements Serializable {
         this.isLeader = isLeader;
     }
 
-    public String getBandName() {
-        return bandName;
+    public Set<BandModel> getBands() {
+        return bands;
     }
 
-    public void setBandName(String bandName) {
-        this.bandName = bandName;
+    public void setBands(Set<BandModel> bands) {
+        this.bands = bands;
     }
 }
