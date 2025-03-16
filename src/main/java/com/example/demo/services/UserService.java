@@ -1,6 +1,6 @@
 package com.example.demo.services;
 
-import com.example.demo.models.UserModel;
+import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,27 +15,17 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<UserModel> getAllUsers() {
-        return userRepository.findAll();
+    public User createUser(User user) {
+        return userRepository.save(user);
     }
 
-    public Optional<UserModel> getOneUser(UUID id) {
+    public Optional<User> login(String email, String password) {
+        return userRepository.findByEmail(email)
+                .filter(user -> user.getPassword().equals(password));
+    }
+
+    public Optional<User> findByUserId(Long id) {
         return userRepository.findById(id);
     }
 
-    public UserModel saveUser(UserModel userModel) {
-        return userRepository.save(userModel);
-    }
-
-    public void deleteUser(UserModel userModel) {
-        userRepository.delete(userModel);
-    }
-
-    public UserModel updateUser(UserModel userModel) {
-        return userRepository.save(userModel);
-    }
-
-    public Optional<UserModel> getOneUserByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 }

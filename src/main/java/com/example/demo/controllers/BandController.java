@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.BandModel;
+import com.example.demo.models.Band;
+import com.example.demo.models.User;
 import com.example.demo.services.BandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,48 +13,38 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/bands")
+@RequestMapping("/api/bands")
 public class BandController {
 
     @Autowired
     private BandService bandService;
 
-    @GetMapping
-    public ResponseEntity<List<BandModel>> getAllBands() {
-        return ResponseEntity.status(HttpStatus.OK).body(bandService.getAllBands());
-    }
+    @PostMapping("/create")
+    public ResponseEntity<Band> createBand(@RequestParam String name, @RequestParam Long leaderID) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getOneBand(@PathVariable(value = "id") UUID id) {
-        Optional<BandModel> bandO = bandService.getOneBand(id);
-        if (bandO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Band not found.");
+        Band band = bandService.createBand(name, leaderID);
+
+        if (band == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(bandO.get());
+        return ResponseEntity.status(HttpStatus.CREATED).body(band);
     }
 
-    @PostMapping
-    public ResponseEntity<BandModel> saveBand(@RequestBody BandModel bandModel) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bandService.saveBand(bandModel));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Band>> getBandsByUserId(@PathVariable Long userId) {
+        List<Band> band = bandService.listUserBands(userId);
+        return ResponseEntity.ok(band);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteBand(@PathVariable(value = "id") UUID id) {
-        Optional<BandModel> bandO = bandService.getOneBand(id);
-        if (bandO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Band not found.");
-        }
-        bandService.deleteBand(bandO.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Band deleted successfully.");
+    @PostMapping("/addMembers")
+    public ResponseEntity<Band> addMembersToBand(@RequestParam Long bandId, @RequestBody List<Long> memberIds) {
+        Band band = bandService.addMembersToBand(bandId, memberIds);
+        return ResponseEntity.ok(band);
+    }
+    @PostMapping("/addMember")
+    public ResponseEntity<Band> addMemberToBand(@RequestParam Long bandId, @RequestParam Long memberId) {
+        Band band = bandService.addMemberToBand(bandId, memberId);
+        return ResponseEntity.ok(band);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBand(@PathVariable(value = "id") UUID id, @RequestBody BandModel bandModel) {
-        Optional<BandModel> bandO = bandService.getOneBand(id);
-        if (bandO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Band not found.");
-        }
-        bandModel.setIdBand(id);
-        return ResponseEntity.status(HttpStatus.OK).body(bandService.updateBand(bandModel));
-    }
 }

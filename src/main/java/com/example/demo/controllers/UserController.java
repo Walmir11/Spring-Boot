@@ -1,6 +1,6 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.UserModel;
+import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,52 +8,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<UserModel>> getAllUsers() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getOneUser(@PathVariable(value = "id") UUID id) {
-        Optional<UserModel> userO = userService.getOneUser(id);
-        if (userO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+    @PostMapping("/create")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User userCreated = userService.createUser(user);
+        if (userCreated == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userO.get());
+        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 
-    @PostMapping
-    public ResponseEntity<UserModel> saveUser(@RequestBody UserModel userModel) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userModel));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") UUID id) {
-        Optional<UserModel> userO = userService.getOneUser(id);
-        if (userO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-        userService.deleteUser(userO.get());
-        return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable(value = "id") UUID id, @RequestBody UserModel userModel) {
-        Optional<UserModel> userO = userService.getOneUser(id);
-        if (userO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-        userModel.setIdUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userModel));
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestParam String email,@RequestParam String password) {
+        return ResponseEntity.ok(userService.login(email, password));
     }
 }
