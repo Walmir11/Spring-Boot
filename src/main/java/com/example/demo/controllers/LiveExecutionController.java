@@ -1,7 +1,7 @@
 package com.example.demo.controllers;
 
 
-import com.example.demo.models.DTOs.ActualMusicDTO;
+import com.example.demo.dto.ActualMusicDTO;
 import com.example.demo.models.LiveExecution;
 import com.example.demo.services.LiveExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.example.demo.models.DTOs;
+package com.example.demo.dto;
 
 import com.example.demo.models.Music;
 import lombok.AllArgsConstructor;
