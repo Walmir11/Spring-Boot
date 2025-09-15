@@ -1,10 +1,10 @@
-package com.example.demo;
+package com.devsuperior.dscatalog;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Spring1ApplicationTests {
+class DscatalogApplicationTests {
 
 	@Test
 	void contextLoads() {
